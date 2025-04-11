@@ -1,7 +1,7 @@
 const express = require("express");
 const hbs = require("hbs");
 const mongoose = require("mongoose");
-const Movie = require("./models/movie.model");
+const Movie = require("./models/movie.models.js");
 
 require("dotenv/config");
 
@@ -33,24 +33,30 @@ app.get('/movies', (req, res) => {
 
 // Movies list route
 
-app.get("/movies", async (req, res) => {
-    try {
-      const movies = await Movie.find(); // Fetch all movies from the database
-      res.render("movies", { movies }); // Pass movies to the template
-    } catch (error) {
-      console.error("Error fetching movies:", error);
-      res.status(500).send("Error loading movies");
-    }
-  });
+router.get('/movies', (req, res, next) => {
+  Movie.find()
+    .then(movies => {
+      res.render('movies', { movies }); 
+    })
+    .catch(err => {
+      console.log('Error fetching movies:', err);
+      next(err);
+    });
+});
+
+module.exports = router;
 
 // Movie details route
-app.get("/movieDetails/:id", async (req, res) => {
-  try {
-    const movie = await Movie.findById(req.params.id);
-    res.render("movieDetails", { movie });
-  } catch (error) {
-    console.error("Error fetching movie details:", error);
-  }
+router.get('/movie/:id', (req, res, next) => {
+  const { id } = req.params;
+  Movie.findById(id)
+    .then(movie => {
+      res.render('movie-details', { movie });
+    })
+    .catch(err => {
+      console.log('Error fetching movie details:', err);
+      next(err);
+    });
 });
 
 // Error handling

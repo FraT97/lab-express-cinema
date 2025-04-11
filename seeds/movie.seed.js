@@ -106,4 +106,18 @@ const movies = [
   // Add here the script that will be run to actually seed the database (feel free to refer to the previous lesson)
   
   // ... your code here
-  
+  mongoose.connect('mongodb://localhost/lab-express-cinema', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    return Movie.deleteMany();  
+  })
+  .then(() => {
+    return Movie.insertMany(movies); 
+  })
+  .then(() => {
+    console.log('Movies seeded successfully');
+    mongoose.connection.close();
+  })
+  .catch((err) => {
+    console.error('Error seeding the database', err);
+    mongoose.connection.close();
+  });
